@@ -8,6 +8,7 @@ import java.time._
 import java.time.format._
 import java.time.temporal._
 import java.util.Locale
+import scala.util.Random
 
 
 class DayGridSpec extends AnyFlatSpec with should.Matchers {
@@ -41,41 +42,105 @@ class DayGridSpec extends AnyFlatSpec with should.Matchers {
     dd.months should have size 12
 
 
-    dd.months(0).month._2 shouldBe "JANUARY"
+    dd.months(0).month._2 shouldBe "Jan"
     dd.months(0).weeks(0).days(0).day._1 shouldBe 5
     
-    dd.months(1).month._2 shouldBe "FEBRUARY"
+    dd.months(1).month._2 shouldBe "Feb"
     dd.months(1).weeks(0).days(0).day._1 shouldBe 2
 
-    dd.months(2).month._2 shouldBe "MARCH"
+    dd.months(2).month._2 shouldBe "Mar"
     dd.months(2).weeks(0).days(0).day._1 shouldBe 1
 
-    dd.months(3).month._2 shouldBe "APRIL"
+    dd.months(3).month._2 shouldBe "Apr"
     dd.months(3).weeks(0).days(0).day._1 shouldBe 5
 
-    dd.months(4).month._2 shouldBe "MAY"
+    dd.months(4).month._2 shouldBe "May"
     dd.months(4).weeks(0).days(0).day._1 shouldBe 3
 
-    dd.months(5).month._2 shouldBe "JUNE"
+    dd.months(5).month._2 shouldBe "Jun"
     dd.months(5).weeks(0).days(0).day._1 shouldBe 7
 
-    dd.months(6).month._2 shouldBe "JULY"
+    dd.months(6).month._2 shouldBe "Jul"
     dd.months(6).weeks(0).days(0).day._1 shouldBe 5
 
-    dd.months(7).month._2 shouldBe "AUGUST"
+    dd.months(7).month._2 shouldBe "Aug"
     dd.months(7).weeks(0).days(0).day._1 shouldBe 2
 
-    dd.months(8).month._2 shouldBe "SEPTEMBER"
+    dd.months(8).month._2 shouldBe "Sep"
     dd.months(8).weeks(0).days(0).day._1 shouldBe 6
 
-    dd.months(9).month._2 shouldBe "OCTOBER"
+    dd.months(9).month._2 shouldBe "Oct"
     dd.months(9).weeks(0).days(0).day._1 shouldBe 4
 
-    dd.months(10).month._2 shouldBe "NOVEMBER"
+    dd.months(10).month._2 shouldBe "Nov"
     dd.months(10).weeks(0).days(0).day._1 shouldBe 1
 
-    dd.months(11).month._2 shouldBe "DECEMBER"
+    dd.months(11).month._2 shouldBe "Dec"
     dd.months(11).weeks(0).days(0).day._1 shouldBe 6
+  }
+
+  "Github Daygrid for 8-Dec-2020" should "map to itself" in {
+    val d = new DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
+
+    val dd1 = d.getGrid(
+      startTime = Some(LocalDateTime.parse("2020-12-08T00:00:00",FMT))
+    )
+
+    val dd2 = dd1.map( d => d)
+
+    println(dd2)
+    
+    dd2.months.size should be > 0
+    assert(dd2.months.size === dd1.months.size)
+    
+
+    for(i <- 0 to dd2.months.size -1 ) {
+      assert(dd2.months(i).month === dd1.months(i).month)  
+
+      for(j <- 0 to dd2.months(i).weeks.size -1 ) {
+        assert(dd2.months(i).weeks(j) === dd1.months(i).weeks(j))
+
+        for(n <- 0 to dd2.months(i).weeks(j).days.size -1 ) {
+          assert(dd2.months(i).weeks(j).days(n) === dd1.months(i).weeks(j).days(n))
+        
+          assert(dd2.months(i).weeks(j).days(n).data === None)
+          assert(dd1.months(i).weeks(j).days(n).data === None)
+        }
+      }
+    }
+  }
+
+  "Github Daygrid for 8-Dec-2020" should "map with new data" in {
+    val d = new DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
+
+    val dd1 = d.getGrid(
+      startTime = Some(LocalDateTime.parse("2020-12-08T00:00:00",FMT))
+    )
+
+    val dd2 = dd1.map( d => d.copy(data = Some(scala.util.Random)))
+
+    println(dd2)
+    
+    dd2.months.size should be > 0
+    assert(dd2.months.size === dd1.months.size)
+    
+
+    for(i <- 0 to dd2.months.size -1 ) {
+      assert(dd2.months(i).month === dd1.months(i).month)  
+
+      for(j <- 0 to dd2.months(i).weeks.size -1 ) {
+        assert(dd2.months(i).weeks(j) !== dd1.months(i).weeks(j))
+
+        for(n <- 0 to dd2.months(i).weeks(j).days.size -1 ) {
+          assert(dd2.months(i).weeks(j).days(n) !== dd1.months(i).weeks(j).days(n))
+          
+          assert(dd2.months(i).weeks(j).days(n).data !== None)
+          assert(dd1.months(i).weeks(j).days(n).data === None)
+
+          assert(dd2.months(i).weeks(j).days(n).data !== dd1.months(i).weeks(j).days(n).data)
+        }
+      }
+    }
   }
 
 }
