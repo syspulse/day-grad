@@ -16,7 +16,7 @@ class DayGridSpec extends AnyFlatSpec with should.Matchers {
   val FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
 
   "Github Daygrid for 8-Dec-2020" should "have last month Decempber and week start on 6-th, Dec" in {
-    val d = new DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
+    val d = DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
 
     val dd = d.getGrid(
       startTime = Some(LocalDateTime.parse("2020-12-08T00:00:00",FMT))
@@ -32,7 +32,7 @@ class DayGridSpec extends AnyFlatSpec with should.Matchers {
   }
 
   "Github Daygrid for 8-Dec-2020" should "start weeks on (5-Jan, 2-Feb, 1-Mar, 5-Apr, 3-May, 7-Jun, 5-Jul, 2-Aug, 6-Sep, 4-Oct, 1-Nov, 6-Dec" in {
-    val d = new DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
+    val d = DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
 
     val dd = d.getGrid(past = 11,
       startTime = Some(LocalDateTime.parse("2020-12-08T00:00:00",FMT))
@@ -80,7 +80,7 @@ class DayGridSpec extends AnyFlatSpec with should.Matchers {
   }
 
   "Github Daygrid for 8-Dec-2020" should "map to itself" in {
-    val d = new DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
+    val d = DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
 
     val dd1 = d.getGrid(
       startTime = Some(LocalDateTime.parse("2020-12-08T00:00:00",FMT))
@@ -109,13 +109,13 @@ class DayGridSpec extends AnyFlatSpec with should.Matchers {
   }
 
   "Github Daygrid for 8-Dec-2020" should "map with new data" in {
-    val d = new DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
+    val d = DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
 
-    val dd1 = d.getGrid(
+    val dd1 = d.getGrid[Int](
       startTime = Some(LocalDateTime.parse("2020-12-08T00:00:00",FMT))
     )
 
-    val dd2 = dd1.map( d => d.copy(data = Some(scala.util.Random)))
+    val dd2 = dd1.map( d => d.copy(data = Some(Random.nextInt)))
 
     dd2.months.size should be > 0
     assert(dd2.months.size === dd1.months.size)
@@ -140,9 +140,9 @@ class DayGridSpec extends AnyFlatSpec with should.Matchers {
   }
 
   "Github Log" should "hit 3 days" in {
-    val d = new DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
+    val d = new DayGridHits(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
 
-    val dd1 = d.getGrid( past = 1,
+    val dd1 = d.getGridHits( past = 1,
       startTime = Some(LocalDateTime.parse("2020-12-09T13:00:00",FMT))
     )
 

@@ -14,20 +14,22 @@ object Demo extends App {
   val past = if(args.size < 2) 12 else args(1).toInt 
   val max = if(args.size < 3) 5 else args(2).toInt
   val min = if(args.size < 4) 1 else args(3).toInt 
+  val zone = "America/Los_Angeles"
+  val locale = "en_US"
 
-  val d = new DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
-  val g = d.getGrid(past = past)
+  val defaultDayGrid = DayGrid(tz = ZoneId.of(zone), locale = new Locale(locale))
+  val defaultGrid = defaultDayGrid.getGrid(past = past)
 
-  Console.err.println(s"Locale: ${d.locale}\nTZ: ${d.tz}\npast=${past} month\nrange=(${min}..${max})")
+  Console.err.println(s"Locale: ${locale}\nTZ: ${zone}\npast=${past} month\nrange=(${min}..${max})")
 
   val (grid,brush,tip) = 
     (if(args.size==0) "rand" else args(0)) match {
       
-      case "rand" => (g,(d:Day) => RandomColor(),(d:Day)=>"")
+      case "rand" => (defaultGrid,(d:Day[Int]) => RandomColor(),(d:Day[Int])=>"")
       
-      case "github" => (g,(d:Day) => { 
+      case "github" => (defaultGrid,(d:Day[Int]) => { 
           (new GradientRange(min,max) with GradientGithub).getColor(Random.between(min-1,max+1))},
-          (d:Day)=>""
+          (d:Day[Int])=>""
         )
       
       case "git" => {
@@ -35,18 +37,18 @@ object Demo extends App {
 
         val gradient = (new GradientRange(min,max) with GradientGithub)
         (
-          g.mapTimeHitsGithub(in.toSeq),
+          DayGridHits(tz = ZoneId.of(zone), locale = new Locale(locale)).getGridHits(past=past).mapTimeHitsGithub(in.toSeq),
 
-          (d:Day) => {
-            val data = d.data.asInstanceOf[Option[Long]].getOrElse(0)
-            gradient.getColor(data.asInstanceOf[Int])
+          (d:Day[Int]) => {
+            val hits = d.data.getOrElse(0)
+            gradient.getColor(hits)
           },
 
-          (d:Day) => s"${d.data.asInstanceOf[Option[Long]].getOrElse(0)} change(s)"
+          (d:Day[Int]) => s"${d.data.getOrElse(0)} change(s)"
         )
       }
 
-      case _ => (g,(d:Day) => Color(0,0,0), (d:Day)=>"")
+      case _ => (defaultGrid,(d:Day[_]) => Color(0,0,0), (d:Day[_])=>"")
     }
 
   val html = DataGridRender.renderHTML(grid, brush, tip)

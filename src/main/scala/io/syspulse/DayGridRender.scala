@@ -61,7 +61,7 @@ class GradientBlack extends Gradient {
 
 object DataGridRender {
 
-  def renderHTML(grid: Grid, brush: Day => Colorful, tip: Day => String): String = {
+  def renderHTML[T](grid: Grid[T], brush: Day[T] => Colorful, tip: Day[T] => String): String = {
 
     var mOffset = 0
     val gridHTML = grid.months.zipWithIndex.map{ case(m,mIndex) => {
