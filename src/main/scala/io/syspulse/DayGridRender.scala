@@ -29,7 +29,6 @@ trait GradientGithub extends Gradient {
   val empty = Color(235, 237, 240)
   val full = Color(33, 110, 57)
   val range = IndexedSeq(
-    empty,
     Color(155,233,168),
     Color(64, 196, 99),
     Color(48, 161, 78),
@@ -39,7 +38,7 @@ trait GradientGithub extends Gradient {
 
 abstract class GradientRange(min:Int,max:Int) extends Gradient {
   type T = Int
-  override def getColor(data:Int) = if(data < min) empty else if(data>max) full else range(data % range.size)
+  override def getColor(data:Int) = if(data < min) empty else if(data>=max) full else range(data / ((max-min+1)/range.size + 1))
 }
 
 class GradientRandom extends Gradient {
@@ -62,7 +61,7 @@ class GradientBlack extends Gradient {
 
 object DataGridRender {
 
-  def renderHTML(grid: Grid, brush: Day => Colorful): String = {
+  def renderHTML(grid: Grid, brush: Day => Colorful, tip: Day => String): String = {
 
     var mOffset = 0
     val gridHTML = grid.months.zipWithIndex.map{ case(m,mIndex) => {
@@ -72,10 +71,11 @@ object DataGridRender {
           val dayHTML = 
           w.days.zipWithIndex.map{ case(d,dIndex) => { 
             val color = brush(d).get
+            val tipTitle = tip(d)
 
-            val tip = s"${d.day._1}-${m.month._2} (${d.day._2})"
+            val title = s"${d.day._1}-${m.month._2} (${d.day._2}): ${tipTitle}"
             
-            s"""         <rect x="12" y="${dIndex*15}" width="11" height="11" class="day" style="fill:rgb(${color})"><title>${tip}</title></rect>\n"""
+            s"""         <rect x="12" y="${dIndex*15}" width="11" height="11" class="day" style="fill:rgb(${color})"><title>${title}</title></rect>\n"""
 
           }}.mkString
 

@@ -7,7 +7,7 @@ import java.util.Locale
 
 case class Month(month:(Int,String),duration:Int,weeks:Seq[Week]=Seq())
 case class Week(days:Seq[Day])
-case class Day(day:(Int,String),date:LocalDate,data:Option[Any] = None)
+case class Day(day:(Int,String),date:LocalDate,data:Option[Any] = None,tip:String = "")
 
 class Grid(val months:Seq[Month],val weekDays:Seq[String]) {
     
@@ -23,7 +23,7 @@ class Grid(val months:Seq[Month],val weekDays:Seq[String]) {
     // expected git log --date=raw
     // "Date:   1607503394 +0200"
     def mapTimeHitsGithub(timeSeriesGit:Seq[String]):Grid = {
-      mapTimeHits(timeSeriesGit.map( s => (s.split("\\s+")(1).toLong)))
+      mapTimeHits( timeSeriesGit.map( s => (s.split("\\s+")(1).toLong)))
     }
 
     def mapTimeHits(timeSeries:Seq[Long]):Grid = {
