@@ -5,20 +5,37 @@ import java.time.format._
 import java.time.temporal._
 import java.util.Locale
 
-case class Pos(x:Int,y:Int)
-case class Month(month:(Int,String),duration:Int,pos:Pos,weeks:Seq[Week]=Seq())
+case class Month(month:(Int,String),duration:Int,weeks:Seq[Week]=Seq())
 case class Week(days:Seq[Day])
-case class Day(day:(Int,String),pos:Pos,data:Option[AnyRef] = None)
+case class Day(day:(Int,String),date:LocalDate,data:Option[Any] = None)
 
 class Grid(val months:Seq[Month],val weekDays:Seq[String]) {
     
     def map(f:(Day)=>Day):Grid = {
       new Grid(
         months.map( m => {
-          Month(month = m.month, duration = m.duration, pos = m.pos, weeks = m.weeks.map( w => Week(w.days.map( d => f(d)))))
+          Month(month = m.month, duration = m.duration, weeks = m.weeks.map( w => Week(w.days.map( d => f(d)))))
         }),
         weekDays = this.weekDays
       )
+    }
+
+    // expected git log --date=raw
+    // "Date:   1607503394 +0200"
+    def mapTimeHitsGithub(timeSeriesGit:Seq[String]):Grid = {
+      mapTimeHits(timeSeriesGit.map( s => (s.split("\\s+")(1).toLong)))
+    }
+
+    def mapTimeHits(timeSeries:Seq[Long]):Grid = {
+      // create a map of timeseries by truncating to Day and grouping
+      val tssMap = timeSeries.map( ts => {
+        LocalDate.ofInstant(Instant.ofEpochSecond(ts), ZoneId.systemDefault())
+      }).groupBy(v=>v).map{ case(k,v) => k -> v.size }
+      
+      map( d => {
+        val hits = tssMap.getOrElse(d.date,0)
+        d.copy(data = Some(hits))
+      })
     }
     
     override def toString = {
@@ -70,12 +87,12 @@ class DayGrid(tz:ZoneId = ZoneId.systemDefault, locale:Locale=Locale.getDefault(
       val days = for(d <- 0 to duration - 1) yield {
         val day = start.plusDays(d).getDayOfMonth
         val dayStr = prettyDay(start.plusDays(d).getDayOfWeek.toString)
-        Day(day=(day,dayStr),Pos(0,0))
+        Day(day=(day,dayStr),date=start.plusDays(d).toLocalDate())
       }
 
       val week = days.grouped(weekDuration).map( dd => Week(dd) ).toSeq
 
-      Month(month=(m.getMonthValue,prettyMonth(mName.toString)),duration,Pos(0,0),week)
+      Month(month=(m.getMonthValue,prettyMonth(mName.toString)),duration,week)
     }
 
     new Grid(mm.reverse, getWeekDays)

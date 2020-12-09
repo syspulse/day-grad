@@ -87,8 +87,6 @@ class DayGridSpec extends AnyFlatSpec with should.Matchers {
     )
 
     val dd2 = dd1.map( d => d)
-
-    println(dd2)
     
     dd2.months.size should be > 0
     assert(dd2.months.size === dd1.months.size)
@@ -119,8 +117,6 @@ class DayGridSpec extends AnyFlatSpec with should.Matchers {
 
     val dd2 = dd1.map( d => d.copy(data = Some(scala.util.Random)))
 
-    println(dd2)
-    
     dd2.months.size should be > 0
     assert(dd2.months.size === dd1.months.size)
     
@@ -141,6 +137,31 @@ class DayGridSpec extends AnyFlatSpec with should.Matchers {
         }
       }
     }
+  }
+
+  "Github Log" should "hit 3 days" in {
+    val d = new DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
+
+    val dd1 = d.getGrid( past = 1,
+      startTime = Some(LocalDateTime.parse("2020-12-09T13:00:00",FMT))
+    )
+
+    val data = Seq(
+          "Date:   1607503394 +0200",
+          "Date:   1607458267 +0200",
+          "Date:   1607444734 +0200"
+        )
+
+    val dd2 = dd1.mapTimeHitsGithub(data)
+
+    println(dd2)
+    
+    dd2.months.size should be > 0
+    assert(dd2.months(1).weeks(0).days(0).data === Some(0) )
+    assert(dd2.months(1).weeks(0).days(1).data === Some(0) )
+    assert(dd2.months(1).weeks(0).days(2).data === Some(2) )
+    assert(dd2.months(1).weeks(0).days(3).data === Some(1) )
+    
   }
 
 }
