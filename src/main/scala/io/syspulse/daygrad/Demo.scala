@@ -1,4 +1,4 @@
-package io.syspulse
+package io.syspulse.daygrad
 
 import java.time._
 import java.time.format._
@@ -17,7 +17,7 @@ object Demo extends App {
   val zone = "America/Los_Angeles"
   val locale = "en_US"
 
-  val defaultDayGrid = DayGrid(tz = ZoneId.of(zone), locale = new Locale(locale))
+  val defaultDayGrid = DayGrad(tz = ZoneId.of(zone), locale = new Locale(locale))
   val defaultGrid = defaultDayGrid.getGrid(past = past)
 
   Console.err.println(s"Locale: ${locale}\nTZ: ${zone}\npast=${past} month\nrange=(${min}..${max})")
@@ -37,7 +37,7 @@ object Demo extends App {
 
         val gradient = (new GradientRange(min,max) with GradientGithub)
         (
-          DayGridHits(tz = ZoneId.of(zone), locale = new Locale(locale)).getGridHits(past=past).mapTimeHitsGithub(in.toSeq),
+          DayGradHits(tz = ZoneId.of(zone), locale = new Locale(locale)).getGridHits(past=past).mapTimeHitsGithub(in.toSeq),
 
           (d:Day[Int]) => {
             val hits = d.data.getOrElse(0)
@@ -51,7 +51,7 @@ object Demo extends App {
       case _ => (defaultGrid,(d:Day[_]) => Color(0,0,0), (d:Day[_])=>"")
     }
 
-  val html = DataGridRender.renderHTML(grid, brush, tip)
+  val html = Render.renderHTML(grid, brush, tip)
   println(html)
 
   // val indexFile = os.pwd / "index.html"

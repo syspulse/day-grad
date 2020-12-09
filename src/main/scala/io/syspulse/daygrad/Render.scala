@@ -1,4 +1,4 @@
-package io.syspulse
+package io.syspulse.daygrad
 
 import java.time._
 import java.time.format._
@@ -59,7 +59,7 @@ class GradientBlack extends Gradient {
   override def getColor(data:Any) = black
 }
 
-object DataGridRender {
+object Render {
 
   def renderHTML[T](grid: Grid[T], brush: Day[T] => Colorful, tip: Day[T] => String): String = {
 
@@ -103,7 +103,7 @@ object DataGridRender {
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="daygrid.css">
+    <link rel="stylesheet" href="daygrad.css">
 </head>
 <body>
 

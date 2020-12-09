@@ -1,4 +1,4 @@
-package io.syspulse
+package io.syspulse.daygrad
 
 import org.scalatest._
 import flatspec._
@@ -11,12 +11,12 @@ import java.util.Locale
 import scala.util.Random
 
 
-class DayGridSpec extends AnyFlatSpec with should.Matchers {
+class DayGradSpec extends AnyFlatSpec with should.Matchers {
 
   val FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
 
-  "Github Daygrid for 8-Dec-2020" should "have last month Decempber and week start on 6-th, Dec" in {
-    val d = DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
+  "Github DayGrad for 8-Dec-2020" should "have last month Decempber and week start on 6-th, Dec" in {
+    val d = DayGrad(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
 
     val dd = d.getGrid(
       startTime = Some(LocalDateTime.parse("2020-12-08T00:00:00",FMT))
@@ -31,8 +31,8 @@ class DayGridSpec extends AnyFlatSpec with should.Matchers {
     dd.months.last.weeks(0).days should have size 3
   }
 
-  "Github Daygrid for 8-Dec-2020" should "start weeks on (5-Jan, 2-Feb, 1-Mar, 5-Apr, 3-May, 7-Jun, 5-Jul, 2-Aug, 6-Sep, 4-Oct, 1-Nov, 6-Dec" in {
-    val d = DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
+  "Github DayGrad for 8-Dec-2020" should "start weeks on (5-Jan, 2-Feb, 1-Mar, 5-Apr, 3-May, 7-Jun, 5-Jul, 2-Aug, 6-Sep, 4-Oct, 1-Nov, 6-Dec" in {
+    val d = DayGrad(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
 
     val dd = d.getGrid(past = 11,
       startTime = Some(LocalDateTime.parse("2020-12-08T00:00:00",FMT))
@@ -79,8 +79,8 @@ class DayGridSpec extends AnyFlatSpec with should.Matchers {
     dd.months(11).weeks(0).days(0).day._1 shouldBe 6
   }
 
-  "Github Daygrid for 8-Dec-2020" should "map to itself" in {
-    val d = DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
+  "Github DayGrad for 8-Dec-2020" should "map to itself" in {
+    val d = DayGrad(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
 
     val dd1 = d.getGrid(
       startTime = Some(LocalDateTime.parse("2020-12-08T00:00:00",FMT))
@@ -108,8 +108,8 @@ class DayGridSpec extends AnyFlatSpec with should.Matchers {
     }
   }
 
-  "Github Daygrid for 8-Dec-2020" should "map with new data" in {
-    val d = DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
+  "Github DayGrad for 8-Dec-2020" should "map with new data" in {
+    val d = DayGrad(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
 
     val dd1 = d.getGrid[Int](
       startTime = Some(LocalDateTime.parse("2020-12-08T00:00:00",FMT))
@@ -140,7 +140,7 @@ class DayGridSpec extends AnyFlatSpec with should.Matchers {
   }
 
   "Github Log" should "hit 3 days" in {
-    val d = new DayGridHits(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
+    val d = new DayGradHits(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
 
     val dd1 = d.getGridHits( past = 1,
       startTime = Some(LocalDateTime.parse("2020-12-09T13:00:00",FMT))

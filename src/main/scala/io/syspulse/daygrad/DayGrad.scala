@@ -1,4 +1,4 @@
-package io.syspulse
+package io.syspulse.daygrad
 
 import java.time._
 import java.time.format._
@@ -33,28 +33,7 @@ class Grid[T](val months:Seq[Month[T]],val weekDays:Seq[String]) {
     }
 }
 
-class GridHits(months:Seq[Month[Int]],weekDays:Seq[String]) extends Grid[Int](months,weekDays){
-
-  // expected git log --date=raw
-  // "Date:   1607503394 +0200"
-  def mapTimeHitsGithub(timeSeriesGit:Seq[String]):Grid[Int] = {
-    mapTimeHits( timeSeriesGit.map( s => (s.split("\\s+")(1).toLong)))
-  }
-
-  def mapTimeHits(timeSeries:Seq[Long]):Grid[Int] = {
-    // create a map of timeseries by truncating to Day and grouping
-    val tssMap = timeSeries.map( ts => {
-      LocalDate.ofInstant(Instant.ofEpochSecond(ts), ZoneId.systemDefault())
-    }).groupBy(v=>v).map{ case(k,v) => k -> v.size }
-    
-    map( d => {
-      val hits = tssMap.getOrElse(d.date,0)
-      d.copy(data = Some(hits))
-    })
-  }        
-}
-
-class DayGrid(val tz:ZoneId, val locale:Locale) {
+class DayGrad(val tz:ZoneId, val locale:Locale) {
   
   val weekDuration = 7
   
@@ -105,18 +84,7 @@ class DayGrid(val tz:ZoneId, val locale:Locale) {
   }
 }
 
-class DayGridHits(tz:ZoneId, locale:Locale) extends DayGrid(tz,locale) {
-     
-    def getGridHits(startTime:Option[LocalDateTime]=None, past:Int=12,boxSize:Int=10):GridHits = {
-      val (mm,weekDays) = generate[Int](startTime,past,boxSize)
-      new GridHits(mm, weekDays)
-    }
-}
 
-object DayGrid {
-  def apply(tz:ZoneId = ZoneId.systemDefault, locale:Locale=Locale.getDefault()) = new DayGrid(tz,locale)
-}
-
-object DayGridHits {
-  def apply(tz:ZoneId = ZoneId.systemDefault, locale:Locale=Locale.getDefault()) = new DayGridHits(tz,locale)
+object DayGrad {
+  def apply(tz:ZoneId = ZoneId.systemDefault, locale:Locale=Locale.getDefault()) = new DayGrad(tz,locale)
 }
