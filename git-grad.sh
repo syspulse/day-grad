@@ -1,5 +1,7 @@
 #!/bin/bash
 
-git log --date=raw |grep Date | java -jar target/scala-2.13/day-grid-assembly-0.0.1-SNAPSHOT.jar git
+GIT_DIR=${1:-./}
+GIT_PAST=${2:-6}
 
-echo "Generated: index.html"
+(cd $GIT_DIR ;git log --date=raw |grep Date ) | ./day-grad.sh $GIT_PAST
+

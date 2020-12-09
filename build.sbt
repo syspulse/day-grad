@@ -5,7 +5,7 @@ name := "day-grid"
 organization := "io.syspulse"
 version := "0.0.1-SNAPSHOT"
 
-fork := true
+//fork := true
 connectInput in run := true
 
 libraryDependencies ++= Seq(

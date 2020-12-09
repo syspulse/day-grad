@@ -19,10 +19,13 @@ case class RandomColor() extends Colorful(abs(Random.nextInt % 256),abs(Random.n
 
 trait Gradient {
   type T
+  val empty: Colorful
+  val full: Colorful
+  val range: Seq[Colorful]
   def getColor(data:T):Colorful
 }
 
-trait GradientGithubLike extends Gradient {
+trait GradientGithub extends Gradient {
   val empty = Color(235, 237, 240)
   val full = Color(33, 110, 57)
   val range = IndexedSeq(
@@ -34,19 +37,27 @@ trait GradientGithubLike extends Gradient {
   )
 }
 
-class GradientGithub(min:Int,max:Int) extends GradientGithubLike {
+abstract class GradientRange(min:Int,max:Int) extends Gradient {
   type T = Int
   override def getColor(data:Int) = if(data < min) empty else if(data>max) full else range(data % range.size)
 }
 
 class GradientRandom extends Gradient {
   type T = Int
-  override def getColor(data:Int) = RandomColor()
+  val random = RandomColor()
+  val empty = random
+  val full = random
+  val range: Seq[Colorful] = Seq(random)
+  override def getColor(data:Int) = random
 }
 
 class GradientBlack extends Gradient {
   type T = Any
-  override def getColor(data:Any) = Color(0,0,0)
+  val black = Color(0,0,0)
+  val empty = black
+  val full = black
+  val range: Seq[Colorful] = Seq(black)
+  override def getColor(data:Any) = black
 }
 
 object DataGridRender {

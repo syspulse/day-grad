@@ -51,7 +51,7 @@ class Grid(val months:Seq[Month],val weekDays:Seq[String]) {
     }
   }
 
-class DayGrid(tz:ZoneId = ZoneId.systemDefault, locale:Locale=Locale.getDefault()) {
+class DayGrid(val tz:ZoneId = ZoneId.systemDefault, val locale:Locale=Locale.getDefault()) {
   
   val weekDuration = 7
   

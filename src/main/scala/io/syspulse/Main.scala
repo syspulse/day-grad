@@ -11,10 +11,12 @@ import scala.util.Random
 import scala.io.StdIn
 
 object Demo extends App {
-  
-  val d = new DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
+  val past = if(args.size < 2) 12 else args(1).toInt 
 
-  val g = d.getGrid()
+  val d = new DayGrid(tz = ZoneId.of("America/Los_Angeles"), locale = new Locale("en_US"))
+  val g = d.getGrid(past = past)
+
+  Console.err.println(s"Locale: ${d.locale}\nTZ: ${d.tz}\npast=${past} month")
 
   val (grid,brush) = 
     (if(args.size==0) "rand" else args(0)) match {
@@ -22,7 +24,7 @@ object Demo extends App {
       case "rand" => (g,(d:Day) => RandomColor())
       
       case "github" => (g,(d:Day) => { 
-          (new GradientGithub(1,5)).getColor(Random.between(0,5))}
+          (new GradientRange(1,5) with GradientGithub).getColor(Random.between(0,5))}
         )
       
       case "git" => {
@@ -33,15 +35,12 @@ object Demo extends App {
 
         (g.mapTimeHitsGithub(in.toSeq),(d:Day) => {
           val data = d.data.asInstanceOf[Option[Long]].getOrElse(0)
-          (new GradientGithub(1,5)).getColor(data.asInstanceOf[Int])
+          (new GradientRange(1,5) with GradientGithub).getColor(data.asInstanceOf[Int])
         })
       }
 
       case _ => (g,(d:Day) => Color(0,0,0))
     }
-
-  
-  println(s"${grid}")
 
   val html = DataGridRender.renderHTML(grid,brush)
   println(html)
