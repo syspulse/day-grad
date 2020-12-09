@@ -50,7 +50,7 @@ object DataGridRender {
             val color = RandomColor().get
             val tip = s"${d.day._1}-${m.month._2} (${d.day._2})"
             
-            s"""         <rect x="12" y="${dIndex*15}" width="11" height="11" style="fill:rgb(${color});stroke-width:1;stroke:rgb(88,96,105)"><title>${tip}</title></rect>\n"""
+            s"""         <rect x="12" y="${dIndex*15}" width="11" height="11" class="day" style="fill:rgb(${color})"><title>${tip}</title></rect>\n"""
 
           }}.mkString
 
