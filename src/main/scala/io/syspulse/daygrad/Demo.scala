@@ -11,7 +11,7 @@ import scala.util.Random
 import scala.io.StdIn
 
 object Demo extends App {
-  val past = if(args.size < 2) 12 else args(1).toInt 
+  val past = if(args.size < 2) 6 else args(1).toInt 
   val max = if(args.size < 3) 5 else args(2).toInt
   val min = if(args.size < 4) 1 else args(3).toInt 
   val zone = "America/Los_Angeles"
